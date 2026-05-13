@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Translator — 智能翻译 Chrome 扩展</title>
+  <meta name="description" content="双击单词即可翻译。极简 Chrome 扩展，AI 驱动，一次性买断 $5。">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"></noscript>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --ink: #0a0a0b; --ink-2: #111113; --ink-3: #18181b; --ink-4: #27272a;
+      --mist: #3f3f46; --fog: #71717a; --ash: #a1a1aa; --snow: #f4f4f5;
+      --violet: #6366f1; --violet-lt: #818cf8;
+      --violet-dim: rgba(99,102,241,0.12); --violet-glow: rgba(99,102,241,0.25);
+      --emerald: #34d399; --r-sm: 8px; --r-md: 14px; --r-lg: 22px; --r-xl: 32px;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Outfit', sans-serif; background: var(--ink); color: var(--snow); min-height: 100vh; overflow-x: hidden; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.8)} }
+    @keyframes popIn { from{opacity:0;transform:scale(0.5)} to{opacity:1;transform:scale(1)} }
+    @keyframes slideUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes shimmer { 0%{left:-60%} 100%{left:130%} }
+    @keyframes drift1 { from{transform:translate(0,0)} to{transform:translate(60px,80px)} }
+    @keyframes drift2 { from{transform:translate(0,0)} to{transform:translate(-50px,-60px)} }
+    .glow-orb { position: fixed; border-radius: 50%; pointer-events: none; z-index: 0; filter: blur(120px); will-change: transform; }
+    .glow-orb-1 { width: 600px; height: 600px; background: radial-gradient(circle, rgba(99,102,241,0.18), transparent 70%); top: -200px; left: -100px; animation: drift1 18s ease-in-out infinite alternate; }
+    .glow-orb-2 { width: 500px; height: 500px; background: radial-gradient(circle, rgba(99,102,241,0.1), transparent 70%); bottom: -100px; right: -150px; animation: drift2 22s ease-in-out infinite alternate; }
+    .wrapper { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 0 24px; }
+    nav { position: sticky; top: 0; z-index: 100; padding: 18px 0; backdrop-filter: blur(20px) saturate(180%); border-bottom: 1px solid rgba(255,255,255,0.04); background: rgba(10,10,11,0.7); }
+    nav .wrapper { display: flex; justify-content: space-between; align-items: center; }
+    .nav-logo { display: flex; align-items: center; gap: 10px; font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--snow); text-decoration: none; }
+    .nav-logo svg { width: 22px; height: 22px; color: var(--violet-lt); flex-shrink: 0; }
+    .nav-badge { font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 4px; background: var(--violet-dim); color: var(--violet-lt); border: 1px solid rgba(99,102,241,0.25); text-transform: uppercase; letter-spacing: 0.08em; }
+    .nav-cta { padding: 8px 20px; background: var(--violet); border: none; border-radius: var(--r-sm); color: #fff; font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none; transition: background .2s, transform .2s, box-shadow .2s; }
+    .nav-cta:hover { background: var(--violet-lt); transform: translateY(-1px); box-shadow: 0 4px 16px var(--violet-glow); }
+    .hero { padding: 120px 0 80px; text-align: center; }
+    .hero-eyebrow { display: inline-flex; align-items: center; gap: 8px; font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; color: var(--violet-lt); letter-spacing: 0.12em; text-transform: uppercase; padding: 6px 14px; border-radius: 99px; background: var(--violet-dim); border: 1px solid rgba(99,102,241,0.25); margin-bottom: 36px; animation: fadeUp .7s .1s both; }
+    .hero-eyebrow .dot-live { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--violet); animation: pulse 2s infinite; }
+    .hero-title { font-family: 'DM Serif Display', serif; font-size: clamp(48px, 8vw, 86px); line-height: 1.05; letter-spacing: -0.03em; color: var(--snow); margin-bottom: 28px; animation: fadeUp .7s .2s both; }
+    .hero-title em { font-style: italic; color: var(--violet-lt); }
+    .hero-title .line2 { display: block; color: var(--ash); font-size: .72em; }
+    .hero-sub { font-size: 18px; font-weight: 300; color: var(--ash); max-width: 540px; margin: 0 auto 52px; line-height: 1.7; animation: fadeUp .7s .3s both; }
+    .hero-actions { display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap; animation: fadeUp .7s .4s both; }
+    .btn-primary-lg { display: inline-flex; align-items: center; gap: 10px; padding: 16px 36px; background: var(--violet); border: none; border-radius: var(--r-md); color: #fff; font-family: 'Outfit', sans-serif; font-size: 16px; font-weight: 600; cursor: pointer; text-decoration: none; position: relative; overflow: hidden; transition: transform .2s, box-shadow .2s; }
+    .btn-primary-lg::after { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(255,255,255,.15), transparent); opacity: 0; transition: opacity .2s; }
+    .btn-primary-lg:hover { transform: translateY(-2px); box-shadow: 0 8px 28px var(--violet-glow); }
+    .btn-primary-lg:hover::after { opacity: 1; }
+    .price-tag { padding: 2px 10px; background: rgba(0,0,0,.25); border-radius: 6px; font-size: 14px; font-family: 'JetBrains Mono', monospace; }
+    .btn-ghost { display: inline-flex; align-items: center; gap: 8px; padding: 16px 28px; border: 1px solid var(--ink-4); border-radius: var(--r-md); color: var(--ash); font-size: 15px; font-weight: 500; background: transparent; text-decoration: none; transition: border-color .2s, color .2s; }
+    .btn-ghost:hover { border-color: var(--mist); color: var(--snow); }
+    .hero-trust { margin-top: 40px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--fog); letter-spacing: .04em; animation: fadeUp .7s .5s both; }
+    .demo-section { padding: 20px 0 100px; animation: fadeUp .8s .5s both; }
+    .demo-frame { background: var(--ink-2); border: 1px solid var(--ink-4); border-radius: var(--r-xl); padding: 2px; overflow: hidden; box-shadow: 0 40px 100px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.04), 0 0 80px rgba(99,102,241,.08); }
+    .demo-topbar { display: flex; align-items: center; gap: 8px; padding: 12px 20px; border-bottom: 1px solid var(--ink-4); background: var(--ink-3); border-radius: calc(var(--r-xl) - 2px) calc(var(--r-xl) - 2px) 0 0; }
+    .dot { width: 11px; height: 11px; border-radius: 50%; }
+    .dot-r{background:#ff5f57} .dot-y{background:#febc2e} .dot-g{background:#28c840}
+    .demo-url { flex: 1; background: var(--ink-4); border-radius: 6px; padding: 5px 14px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--fog); text-align: center; max-width: 340px; margin: 0 auto; }
+    .demo-body { padding: 40px 40px 32px; }
+    .demo-text-block { font-size: 15px; line-height: 1.9; color: var(--ash); font-family: 'Outfit', sans-serif; font-weight: 300; margin-bottom: 24px; }
+    .demo-selected { background: rgba(99,102,241,.2); border-bottom: 2px solid var(--violet); color: var(--snow); padding: 1px 2px; border-radius: 2px; }
+    .demo-icon { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; background: var(--violet); border-radius: 8px; vertical-align: middle; margin-left: 6px; animation: popIn .4s 1.5s both cubic-bezier(0.34,1.56,0.64,1); }
+    .demo-icon svg { width: 16px; height: 16px; color: #fff; }
+    .demo-bubble { background: var(--ink-3); border: 1px solid var(--ink-4); border-radius: var(--r-md); padding: 14px 16px; max-width: 320px; box-shadow: 0 12px 40px rgba(0,0,0,.5); animation: slideUp .4s 2s both cubic-bezier(0.16,1,0.3,1); }
+    .bubble-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600; color: var(--violet-lt); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 8px; }
+    .bubble-result { font-size: 14px; line-height: 1.6; color: var(--snow); }
+    .section-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; color: var(--violet-lt); text-transform: uppercase; letter-spacing: .12em; margin-bottom: 20px; }
+    .section-title { font-family: 'DM Serif Display', serif; font-size: clamp(32px, 5vw, 48px); line-height: 1.1; letter-spacing: -.02em; color: var(--snow); margin-bottom: 64px; }
+    .section-title span { color: var(--ash); }
+    .features { padding: 80px 0 100px; }
+    .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
+    .feat-card { background: var(--ink-2); padding: 32px 28px; border: 1px solid var(--ink-4); transition: border-color .2s, background .2s; }
+    .feat-card:hover { background: var(--ink-3); border-color: var(--mist); }
+    .feat-card:first-child { border-radius: var(--r-lg) 0 0 var(--r-lg); }
+    .feat-card:last-child  { border-radius: 0 var(--r-lg) var(--r-lg) 0; }
+    .feat-icon { width: 44px; height: 44px; border-radius: 12px; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; background: var(--violet-dim); border: 1px solid rgba(99,102,241,.2); }
+    .feat-icon svg { width: 22px; height: 22px; color: var(--violet-lt); }
+    .feat-title { font-size: 16px; font-weight: 600; color: var(--snow); margin-bottom: 10px; }
+    .feat-desc { font-size: 14px; font-weight: 300; color: var(--fog); line-height: 1.7; }
+    .steps { padding: 40px 0 100px; }
+    .steps-row { display: grid; grid-template-columns: repeat(4, 1fr); }
+    .step { padding: 36px 28px 32px; border-left: 1px solid var(--ink-4); }
+    .step:first-child { border-left: none; }
+    .step-num { font-family: 'DM Serif Display', serif; font-size: 52px; color: var(--ink-4); line-height: 1; margin-bottom: 16px; }
+    .step-title { font-size: 15px; font-weight: 600; color: var(--snow); margin-bottom: 8px; }
+    .step-desc  { font-size: 13px; font-weight: 300; color: var(--fog); line-height: 1.6; }
+    .pricing { padding: 60px 0 120px; }
+    .pricing-inner { max-width: 480px; margin: 0 auto; background: var(--ink-2); border: 1px solid var(--ink-4); border-radius: var(--r-xl); overflow: hidden; box-shadow: 0 0 0 1px rgba(255,255,255,.03), 0 40px 80px rgba(0,0,0,.4); }
+    .pricing-header { padding: 40px 40px 32px; background: linear-gradient(160deg, rgba(99,102,241,.1), transparent); border-bottom: 1px solid var(--ink-4); }
+    .pricing-tier { display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; padding: 4px 12px; border-radius: 6px; background: var(--violet-dim); color: var(--violet-lt); border: 1px solid rgba(99,102,241,.25); margin-bottom: 20px; }
+    .pricing-price { font-family: 'DM Serif Display', serif; font-size: 72px; line-height: 1; letter-spacing: -.04em; color: var(--snow); margin-bottom: 4px; }
+    .pricing-price sup { font-size: 32px; vertical-align: super; color: var(--ash); }
+    .pricing-desc { font-size: 14px; color: var(--fog); font-weight: 300; }
+    .pricing-features { padding: 32px 40px; }
+    .pf-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,.04); font-size: 14px; color: var(--ash); }
+    .pf-item:last-child { border-bottom: none; }
+    .pf-item svg { width: 16px; height: 16px; color: var(--emerald); flex-shrink: 0; margin-top: 2px; }
+    .pf-item strong { color: var(--snow); font-weight: 500; }
+    .pricing-cta { padding: 0 40px 40px; }
+    .btn-buy { display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; padding: 18px; border: none; border-radius: var(--r-md); background: linear-gradient(135deg, var(--violet), #7c3aed); color: #fff; font-family: 'Outfit', sans-serif; font-size: 17px; font-weight: 600; cursor: pointer; text-decoration: none; position: relative; overflow: hidden; transition: transform .2s, box-shadow .2s; }
+    .btn-buy::before { content: ''; position: absolute; top: -50%; left: -60%; width: 50%; height: 200%; background: linear-gradient(90deg, transparent, rgba(255,255,255,.12), transparent); transform: skewX(-20deg); animation: shimmer 3s 1s infinite; }
+    .btn-buy:hover { transform: translateY(-2px); box-shadow: 0 10px 36px rgba(99,102,241,.45); }
+    .buy-price { font-family: 'JetBrains Mono', monospace; font-size: 15px; background: rgba(0,0,0,.25); padding: 3px 12px; border-radius: 6px; }
+    .pricing-note { text-align: center; margin-top: 16px; font-size: 12px; color: var(--fog); }
+    .pricing-note a { color: var(--ash); text-decoration: underline; text-underline-offset: 3px; }
+    .comparison { padding: 0 0 100px; }
+    .cmp-table { width: 100%; border-collapse: collapse; }
+    .cmp-table th, .cmp-table td { padding: 14px 20px; text-align: left; font-size: 14px; border-bottom: 1px solid var(--ink-4); }
+    .cmp-table th { font-size: 12px; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: .08em; color: var(--fog); font-weight: 500; }
+    .cmp-table td:first-child { color: var(--ash); }
+    .cmp-table td:nth-child(2) { color: var(--fog); }
+    .cmp-table thead tr { border-bottom: 1px solid var(--mist); }
+    .cmp-col-header { font-family: 'Outfit', sans-serif !important; font-size: 14px !important; color: var(--snow) !important; text-transform: none !important; letter-spacing: 0 !important; }
+    .cmp-col-highlight { color: var(--violet-lt) !important; }
+    .check { color: var(--emerald); } .cross { color: var(--fog); }
+    footer { border-top: 1px solid var(--ink-4); padding: 40px 0; text-align: center; }
+    .footer-logo { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--ash); margin-bottom: 12px; }
+    .footer-links { display: flex; justify-content: center; gap: 24px; margin-bottom: 24px; flex-wrap: wrap; }
+    .footer-links a { font-size: 13px; color: var(--fog); text-decoration: none; transition: color .2s; }
+    .footer-links a:hover { color: var(--ash); }
+    .footer-copy { font-size: 12px; color: var(--mist); font-family: 'JetBrains Mono', monospace; }
+    @media (max-width: 720px) {
+      .features-grid { grid-template-columns: 1fr; gap: 12px; }
+      .feat-card:first-child, .feat-card:last-child { border-radius: var(--r-lg); }
+      .steps-row { grid-template-columns: 1fr 1fr; }
+      .cmp-table th, .cmp-table td { padding: 10px 12px; font-size: 12px; }
+      .demo-body { padding: 24px 20px; }
+    }
+    @media (max-width: 480px) {
+      .hero { padding: 80px 0 60px; }
+      .steps-row { grid-template-columns: 1fr; }
+      .pricing-header, .pricing-features, .pricing-cta { padding-left: 24px; padding-right: 24px; }
+    }
+
+    /* 支付弹窗样式 */
+    .payment-modal {
+      display: none;
+      position: fixed;
+      z-index: 10000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.75);
+      align-items: center;
+      justify-content: center;
+    }
+    .payment-modal-content {
+      background: #fff;
+      border-radius: 16px;
+      padding: 32px;
+      max-width: 400px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      animation: slideUp 0.3s ease;
+      will-change: transform;
+    }
+    .payment-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: none;
+      border: none;
+      font-size: 32px;
+      color: #94a3b8;
+      cursor: pointer;
+      line-height: 1;
+      transition: color 0.2s;
+    }
+    .payment-close:hover { color: #1e293b; }
+    .payment-tabs {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .payment-tab {
+      flex: 1;
+      padding: 12px 20px;
+      border: 2px solid #e2e8f0;
+      background: #fff;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .payment-tab:hover { border-color: #cbd5e1; }
+    .payment-tab.active { border-color: #6366f1; background: #f0f1ff; color: #6366f1; }
+    #paidDoneBtn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(16,185,129,0.45); }
+    #paidDoneBtn:active { transform: translateY(0); }
+    #sendEmailBtn:hover, #copyEmailBtn:hover, #showWxBtn:hover { transform: translateX(2px); }
+    #dropZone:hover { border-color: #a5b4fc; background: #f5f3ff; }
+    .payment-qr-container { position: relative; min-height: 280px; }
+    .payment-qr {
+      display: none;
+      text-align: center;
+      animation: fadeIn 0.3s ease;
+    }
+    .payment-qr.active { display: block; }
+    .payment-notice {
+      margin-top: 24px;
+      padding: 16px;
+      background: #f8fafc;
+      border-radius: 8px;
+      font-size: 13px;
+      line-height: 1.6;
+      color: #475569;
+    }
+    .payment-notice p { margin: 4px 0; }
+    .payment-notice strong { color: #1e293b; }
+    @keyframes slideUp {
+      from { transform: translateY(40px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="glow-orb glow-orb-1"></div>
+  <div class="glow-orb glow-orb-2"></div>
+
+  <nav>
+    <div class="wrapper">
+      <a class="nav-logo" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 8l6 6"/><path d="M4 14l6-6 2-3"/><path d="M2 5h12"/><path d="M7 2v3"/><path d="M22 22l-5-10-5 10"/><path d="M14 18h6"/></svg>
+        AI Translator <span class="nav-badge">Chrome</span>
+      </a>
+      <a class="nav-cta" href="#pricing">立即买断 · $5</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="wrapper">
+      <div class="hero-eyebrow"><span class="dot-live"></span> Chrome 扩展 · AI 驱动 · 一次性买断</div>
+      <h1 class="hero-title">双击任意单词<br><em>即刻翻译</em><span class="line2">无需切换标签页</span></h1>
+      <p class="hero-sub">选中文字，一个小图标，点击——翻译结果直接浮现在你阅读的位置。不打扰，不跳转，如呼吸般自然。</p>
+      <div class="hero-actions">
+        <a href="#pricing" class="btn-primary-lg">立即买断 <span class="price-tag">$5</span></a>
+        <a href="#how" class="btn-ghost">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+          查看演示
+        </a>
+      </div>
+      <p class="hero-trust">已有 2,400+ 用户 · Chrome Web Store 4.9★ · 买断永久使用</p>
+    </div>
+  </section>
+
+  <section class="demo-section" id="how">
+    <div class="wrapper">
+      <div class="demo-frame">
+        <div class="demo-topbar">
+          <div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div>
+          <div class="demo-url">en.wikipedia.org/wiki/Artificial_intelligence</div>
+        </div>
+        <div class="demo-body">
+          <div class="demo-text-block">
+            Artificial intelligence (AI) is the simulation of
+            <span class="demo-selected">human intelligence</span><span class="demo-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 8l6 6"/><path d="M4 14l6-6 2-3"/><path d="M2 5h12"/><path d="M7 2v3"/><path d="M22 22l-5-10-5 10"/><path d="M14 18h6"/></svg>
+            </span> processes by computer systems...
+          </div>
+          <div class="demo-bubble">
+            <div class="bubble-label">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="display:inline;vertical-align:middle;margin-right:4px"><path d="M5 8l6 6"/><path d="M4 14l6-6 2-3"/><path d="M2 5h12"/><path d="M7 2v3"/><path d="M22 22l-5-10-5 10"/><path d="M14 18h6"/></svg>
+              AI 翻译
+            </div>
+            <div class="bubble-result">人类智能</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="features">
+    <div class="wrapper">
+      <p class="section-label">功能特性</p>
+      <h2 class="section-title">为阅读而设计<span>，不是为翻译</span></h2>
+      <div class="features-grid">
+        <div class="feat-card">
+          <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></div>
+          <div class="feat-title">双击 / 拖选触发</div>
+          <div class="feat-desc">双击单词或拖选文字后，图标以弹入动画出现在鼠标旁，零操作成本。</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+          <div class="feat-title">原位气泡翻译</div>
+          <div class="feat-desc">翻译结果显示在选中文字正上方，不遮挡阅读上下文，随时关闭。</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></div>
+          <div class="feat-title">智能语言切换</div>
+          <div class="feat-desc">自动检测输入语言：中文自动译英，英文自动译中，支持多语言互译。</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="steps" id="steps">
+    <div class="wrapper">
+      <p class="section-label">使用流程</p>
+      <h2 class="section-title">4 步，无需思考</h2>
+      <div class="steps-row">
+        <div class="step"><div class="step-num">01</div><div class="step-title">安装扩展</div><div class="step-desc">从 Chrome 商店一键安装，买断后输入 License Key 激活。</div></div>
+        <div class="step"><div class="step-num">02</div><div class="step-title">选中文字</div><div class="step-desc">在任意网页双击单词，或拖选一段文字后松开鼠标。</div></div>
+        <div class="step"><div class="step-num">03</div><div class="step-title">点击图标</div><div class="step-desc">紫色翻译图标弹出后，点击它——翻译气泡立刻出现。</div></div>
+        <div class="step"><div class="step-num">04</div><div class="step-title">阅读结果</div><div class="step-desc">翻译显示在原文上方，一键复制，点击其他位置关闭。</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="pricing" id="pricing">
+    <div class="wrapper">
+      <p class="section-label" style="text-align:center">定价</p>
+      <h2 class="section-title" style="text-align:center;margin-bottom:48px">一次付款，<span>永久使用</span></h2>
+      <div class="pricing-inner">
+        <div class="pricing-header">
+          <div class="pricing-tier">完整版 · 买断</div>
+          <div class="pricing-price"><sup>$</sup>5</div>
+          <div class="pricing-desc">一次性付款 · 无订阅 · 终身有效</div>
+        </div>
+        <div class="pricing-features">
+          <div class="pf-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg><div><strong>无限次翻译</strong> — 免费版每天仅 20 次</div></div>
+          <div class="pf-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg><div><strong>双击 / 拖选</strong> 原位气泡翻译</div></div>
+          <div class="pf-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg><div><strong>自定义 AI 模型</strong> — 支持 OpenAI / DeepSeek / Claude</div></div>
+          <div class="pf-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg><div><strong>所有未来更新</strong> — 永久免费升级</div></div>
+          <div class="pf-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg><div><strong>即时 License Key</strong> — 购买后邮件秒发</div></div>
+        </div>
+        <div class="pricing-cta">
+          <button class="btn-buy" id="showPaymentBtn">
+            立即购买 <span class="buy-price">$5</span>
+          </button>
+          <p class="pricing-note">支持微信、支付宝 · 付款后将发送 License Key 至您的邮箱</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="comparison">
+    <div class="wrapper">
+      <p class="section-label">对比</p>
+      <h2 class="section-title" style="margin-bottom:40px">为什么不用<span> Google 翻译？</span></h2>
+      <table class="cmp-table">
+        <thead>
+          <tr><th>功能</th><th class="cmp-col-header">Google 翻译插件</th><th class="cmp-col-header cmp-col-highlight">AI Translator ✦</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>原位气泡，不跳转</td><td class="cross">✗</td><td class="check">✓</td></tr>
+          <tr><td>弹入动画小图标</td><td class="cross">✗</td><td class="check">✓</td></tr>
+          <tr><td>AI 上下文理解</td><td class="cross">✗</td><td class="check">✓</td></tr>
+          <tr><td>自定义 AI 模型</td><td class="cross">✗</td><td class="check">✓</td></tr>
+          <tr><td>深色主题 UI</td><td class="cross">✗</td><td class="check">✓</td></tr>
+          <tr><td>点击外部自动关闭</td><td class="cross">✗</td><td class="check">✓</td></tr>
+          <tr><td>一次性买断</td><td style="color:var(--fog)">免费</td><td class="check">$5 永久</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrapper">
+      <div class="footer-logo">AI Translator</div>
+      <div class="footer-links">
+        <a href="#how">演示</a><a href="#pricing">定价</a>
+        <a href="settings.html">设置</a><a href="mailto:yujinhai2019@163.com">支持</a>
+        <a href="#">隐私政策</a>
+      </div>
+      <div class="footer-copy">© 2025 AI Translator · Built with ♥ · Chrome Extension</div>
+    </div>
+  </footer>
+
+  <!-- 支付弹窗 -->
+  <div id="paymentModal" class="payment-modal">
+    <div class="payment-modal-content">
+      <button class="payment-close" id="closePaymentBtn">&times;</button>
+
+      <!-- 第一步：填写邮箱 -->
+      <div id="stepEmail">
+        <h3 style="margin-bottom:8px;text-align:center;font-size:20px;color:#1e293b;">填写您的邮箱</h3>
+        <p style="text-align:center;color:#64748b;font-size:14px;margin-bottom:20px;">付款后 License Key 将发送到此邮箱</p>
+        <input id="emailInput" type="email" placeholder="your@email.com"
+          style="width:100%;padding:14px;border:2px solid #e2e8f0;border-radius:10px;font-size:16px;outline:none;margin-bottom:6px;box-sizing:border-box;">
+        <p id="emailError" style="display:none;color:#ef4444;font-size:13px;margin:0 0 12px 2px;">请输入有效的邮箱地址</p>
+        <div style="margin-bottom:16px;"></div>
+        <button id="nextStepBtn"
+          style="width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#7c3aed);color:white;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;">
+          下一步 →
+        </button>
+      </div>
+
+      <!-- 第二步：显示收款码 -->
+      <div id="stepQR" style="display:none;">
+        <h3 style="margin-bottom:4px;text-align:center;font-size:20px;color:#1e293b;">扫码支付 $5</h3>
+        <p id="emailConfirm" style="text-align:center;color:#6366f1;font-size:13px;margin-bottom:16px;"></p>
+
+        <div class="payment-tabs">
+          <button class="payment-tab active" data-tab="wechat">微信支付</button>
+          <button class="payment-tab" data-tab="alipay">支付宝</button>
+        </div>
+
+        <div class="payment-qr-container" style="margin-top:16px;">
+          <div id="wechatQR" class="payment-qr active" style="text-align:center;">
+            <img src="images/wx_pay.JPG" alt="微信收款码"
+              style="width:220px;height:auto;border-radius:8px;display:block;margin:0 auto;">
+            <p style="margin-top:12px;color:#64748b;font-size:14px;">微信扫码 · 支付 <strong style="color:#10b981;">$5</strong></p>
+          </div>
+          <div id="alipayQR" class="payment-qr" style="text-align:center;display:none;">
+            <img src="images/ali_pay.JPG" alt="支付宝收款码"
+              style="width:220px;height:auto;border-radius:8px;display:block;margin:0 auto;">
+            <p style="margin-top:12px;color:#64748b;font-size:14px;">支付宝扫码 · 支付 <strong style="color:#10b981;">$5</strong></p>
+          </div>
+        </div>
+
+        <div style="margin-top:16px;padding:12px 14px;background:#f0fdf4;border-radius:10px;border:1px solid #bbf7d0;">
+          <p style="font-size:13px;color:#166534;line-height:1.7;margin:0;">
+            💡 付款备注填写邮箱 <strong id="emailReminder"></strong>，方便核对<br>
+            📧 付款后请发截图到 <a href="mailto:yujinhai2019@163.com" style="color:#166534;font-weight:600;">yujinhai2019@163.com</a>，我会立即发送 Key
+          </p>
+        </div>
+
+        <!-- 已付款按钮 -->
+        <button id="paidDoneBtn" style="
+          margin-top:18px;width:100%;padding:14px;
+          background:linear-gradient(135deg,#10b981,#059669);
+          color:#fff;border:none;border-radius:12px;
+          font-size:16px;font-weight:700;cursor:pointer;
+          box-shadow:0 4px 16px rgba(16,185,129,0.35);
+          transition:transform .15s,box-shadow .15s;
+          letter-spacing:.02em;">
+          ✅ 我已付款，提交截图
+        </button>
+      </div>
+
+      <!-- 第三步：提交截图 -->
+      <div id="stepPaid" style="display:none;">
+        <div style="text-align:center;margin-bottom:18px;">
+          <div style="font-size:44px;margin-bottom:8px;">🧾</div>
+          <h3 style="font-size:19px;color:#1e293b;margin:0 0 4px;">发送付款截图</h3>
+          <p id="paidEmailLabel" style="font-size:13px;color:#6366f1;margin:0;"></p>
+        </div>
+
+        <!-- 截图上传区 -->
+        <div id="dropZone" style="
+          border:2px dashed #c7d2fe;border-radius:12px;
+          background:#f8f9ff;padding:20px 16px;text-align:center;
+          cursor:pointer;transition:border-color .2s,background .2s;margin-bottom:16px;">
+          <input type="file" id="screenshotInput" accept="image/*" style="display:none;">
+          <div id="dropHint">
+            <div style="font-size:32px;margin-bottom:6px;">📷</div>
+            <p style="font-size:14px;color:#64748b;margin:0;">点击选择截图，或拖拽到这里</p>
+            <p style="font-size:12px;color:#94a3b8;margin:4px 0 0;">支持 JPG / PNG</p>
+          </div>
+          <img id="previewImg" style="display:none;max-width:100%;max-height:180px;border-radius:8px;object-fit:contain;" alt="截图预览">
+          <p id="previewName" style="display:none;font-size:12px;color:#6366f1;margin:6px 0 0;"></p>
+        </div>
+
+        <!-- 发送方式 -->
+        <p style="font-size:13px;font-weight:600;color:#475569;margin:0 0 10px;text-align:center;">选择发送方式</p>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+
+          <!-- 方式1：邮件（含截图附件说明） -->
+          <button id="sendEmailBtn" style="
+            display:flex;align-items:center;gap:12px;
+            width:100%;padding:13px 16px;
+            background:#fff;border:1.5px solid #c7d2fe;border-radius:12px;
+            font-size:14px;font-weight:600;color:#1e293b;cursor:pointer;
+            transition:border-color .2s,background .2s;text-align:left;">
+            <span style="font-size:22px;">📧</span>
+            <span>
+              <span style="display:block;">发送邮件给我</span>
+              <span style="font-size:12px;font-weight:400;color:#94a3b8;">yujinhai2019@163.com · 附上截图</span>
+            </span>
+          </button>
+
+          <!-- 方式2：复制邮箱 -->
+          <button id="copyEmailBtn" style="
+            display:flex;align-items:center;gap:12px;
+            width:100%;padding:13px 16px;
+            background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;
+            font-size:14px;font-weight:600;color:#1e293b;cursor:pointer;
+            transition:border-color .2s,background .2s;text-align:left;">
+            <span style="font-size:22px;">📋</span>
+            <span>
+              <span style="display:block;">复制邮箱地址</span>
+              <span style="font-size:12px;font-weight:400;color:#94a3b8;">然后自行在邮件 App 中附上截图发送</span>
+            </span>
+          </button>
+
+        </div>
+
+        <!-- 复制成功提示 -->
+        <div id="copyToast" style="
+          display:none;margin-top:12px;padding:10px 14px;
+          background:#1e293b;color:#fff;border-radius:8px;
+          font-size:13px;text-align:center;">
+          ✅ 邮箱已复制！去邮件 App 粘贴发送（记得附上截图）
+        </div>
+
+        <!-- 底部说明 -->
+        <div style="margin-top:16px;padding:12px;background:#f8fafc;border-radius:10px;font-size:12px;color:#94a3b8;text-align:center;line-height:1.8;">
+          收到截图后我会在 <strong style="color:#1e293b;">30 分钟内</strong> 发送 License Key 到您的邮箱<br>
+          <span id="paidEmailBottom" style="color:#6366f1;font-weight:600;"></span>
+        </div>
+      </div>
+
+      <!-- 第三步：通知已发送，等待 Key -->
+      <div id="stepWaiting" style="display:none;text-align:center;padding:8px 0;">
+        <div style="font-size:52px;margin-bottom:16px;">📬</div>
+        <h3 style="font-size:20px;color:#1e293b;margin-bottom:8px;">已收到你的购买信息！</h3>
+        <p style="font-size:14px;color:#64748b;line-height:1.7;margin-bottom:20px;">
+          请将付款截图发送至邮件，<br>
+          License Key 将在 <strong style="color:#1e293b;">30 分钟内</strong>发送至：
+        </p>
+        <div id="waitingEmail" style="font-size:15px;font-weight:700;color:#6366f1;background:#f0f1ff;border-radius:8px;padding:10px 16px;margin-bottom:20px;word-break:break-all;"></div>
+        <a id="waitingMailto" href="#"
+          style="display:block;width:100%;padding:13px;background:linear-gradient(135deg,#6366f1,#7c3aed);color:#fff;border-radius:10px;font-size:14px;font-weight:700;text-decoration:none;margin-bottom:16px;box-sizing:border-box;">
+          📧 点击发送付款截图
+        </a>
+        <div style="background:#f8fafc;border-radius:10px;padding:14px;text-align:left;font-size:13px;color:#475569;line-height:1.8;">
+          <p style="margin:0 0 4px 0;">📌 收不到 Key 时请检查：</p>
+          <p style="margin:0;">
+            1. 垃圾邮件 / 广告邮件文件夹<br>
+            2. 邮箱地址是否正确<br>
+            3. 联系 <a href="mailto:yujinhai2019@163.com" style="color:#6366f1;">yujinhai2019@163.com</a>
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="landing.js"></script>
+</body>
+</html>
+

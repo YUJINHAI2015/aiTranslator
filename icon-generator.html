@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>AI Translator — Icon Generator</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #0f0f12;
+      font-family: -apple-system, 'Segoe UI', sans-serif;
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 48px 24px;
+      gap: 40px;
+    }
+    h1 { font-size: 20px; font-weight: 600; color: #a5b4fc; letter-spacing: .04em; }
+    .grid {
+      display: flex;
+      align-items: flex-end;
+      gap: 32px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+    canvas {
+      border-radius: 22%;
+      box-shadow: 0 0 0 1px rgba(165,180,252,.15), 0 8px 32px rgba(0,0,0,.6);
+      image-rendering: pixelated;
+    }
+    label { font-size: 13px; color: #64748b; }
+    .actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    button {
+      padding: 11px 24px;
+      background: linear-gradient(135deg, #6366f1, #7c3aed);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity .2s;
+    }
+    button:hover { opacity: .85; }
+    .note {
+      max-width: 520px;
+      text-align: center;
+      font-size: 13px;
+      color: #475569;
+      line-height: 1.8;
+      background: #1e1e2e;
+      border: 1px solid #2d2d3e;
+      border-radius: 10px;
+      padding: 16px 20px;
+    }
+    .note code {
+      background: #2d2d3e;
+      color: #a5b4fc;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>🎨 AI Translator — Chrome Icon Generator</h1>
+
+<div class="grid">
+  <div class="item">
+    <canvas id="c128" width="128" height="128" style="width:128px;height:128px"></canvas>
+    <label>128 × 128</label>
+  </div>
+  <div class="item">
+    <canvas id="c48" width="48" height="48" style="width:96px;height:96px"></canvas>
+    <label>48 × 48</label>
+  </div>
+  <div class="item">
+    <canvas id="c32" width="32" height="32" style="width:64px;height:64px"></canvas>
+    <label>32 × 32</label>
+  </div>
+  <div class="item">
+    <canvas id="c16" width="16" height="16" style="width:48px;height:48px"></canvas>
+    <label>16 × 16</label>
+  </div>
+</div>
+
+<div class="actions">
+  <button onclick="downloadAll()">⬇ 一键下载全部 PNG</button>
+  <button onclick="downloadOne('c128','icon128.png')">下载 128px</button>
+  <button onclick="downloadOne('c48','icon48.png')">下载 48px</button>
+  <button onclick="downloadOne('c32','icon32.png')">下载 32px</button>
+  <button onclick="downloadOne('c16','icon16.png')">下载 16px</button>
+</div>
+
+<div class="note">
+  📁 下载后将所有 PNG 放入 <code>images/</code> 文件夹，<br>
+  然后更新 <code>manifest.json</code> 添加 icons 配置（见页面底部说明）
+</div>
+
+<script>
+// ─── 绘制图标核心函数 ──────────────────────────────────────
+function drawIcon(canvas) {
+  const s  = canvas.width;
+  const ctx = canvas.getContext('2d');
+  const r  = s * 0.22;   // 圆角半径
+
+  // ── 1. 背景：主题色圆角正方形 + 渐变 ──
+  ctx.clearRect(0, 0, s, s);
+
+  const bgGrad = ctx.createLinearGradient(0, 0, s, s);
+  bgGrad.addColorStop(0,   '#6366f1');
+  bgGrad.addColorStop(0.5, '#7c3aed');
+  bgGrad.addColorStop(1,   '#5b21b6');
+
+  roundRect(ctx, 0, 0, s, s, r);
+  ctx.fillStyle = bgGrad;
+  ctx.fill();
+
+  // ── 2. 光晕：左上角白色高光 ──
+  const glow = ctx.createRadialGradient(s * 0.3, s * 0.25, 0, s * 0.3, s * 0.25, s * 0.55);
+  glow.addColorStop(0,   'rgba(255,255,255,0.25)');
+  glow.addColorStop(0.5, 'rgba(255,255,255,0.06)');
+  glow.addColorStop(1,   'rgba(255,255,255,0)');
+
+  roundRect(ctx, 0, 0, s, s, r);
+  ctx.fillStyle = glow;
+  ctx.fill();
+
+  // ── 3. 核心图标：双语翻译符号 ──
+  const pad  = s * 0.12;
+  const half = (s - pad * 2) / 2;
+
+  // 左上 "A" — 纯白
+  ctx.save();
+  ctx.font = `${Math.round(s * 0.30)}px Georgia, serif`;
+  ctx.fillStyle   = '#ffffff';
+  ctx.globalAlpha = 1.0;
+  ctx.textAlign   = 'left';
+  ctx.textBaseline = 'top';
+  ctx.fillText('A', pad, pad * 1.1);
+  ctx.restore();
+
+  // 右下 "文" — 半透明白
+  ctx.save();
+  ctx.font = `${Math.round(s * 0.28)}px 'PingFang SC', 'Microsoft YaHei', serif`;
+  ctx.fillStyle   = 'rgba(255,255,255,0.82)';
+  ctx.globalAlpha = 1.0;
+  ctx.textAlign   = 'right';
+  ctx.textBaseline = 'alphabetic';
+  ctx.fillText('文', s - pad * 0.9, s - pad * 0.8);
+  ctx.restore();
+
+  // 中间对角箭头（↗ ↙）
+  if (s >= 32) {
+    drawArrow(ctx, s);
+  }
+
+  // ── 4. 外边框光效 ──
+  roundRect(ctx, 1, 1, s - 2, s - 2, r - 1);
+  const strokeGrad = ctx.createLinearGradient(0, 0, s, s);
+  strokeGrad.addColorStop(0,   'rgba(255,255,255,0.5)');
+  strokeGrad.addColorStop(0.5, 'rgba(255,255,255,0.15)');
+  strokeGrad.addColorStop(1,   'rgba(255,255,255,0.05)');
+  ctx.strokeStyle = strokeGrad;
+  ctx.lineWidth   = s * 0.025;
+  ctx.stroke();
+}
+
+function drawArrow(ctx, s) {
+  const cx = s * 0.5;
+  const cy = s * 0.5;
+  const len = s * 0.18;
+  const aw  = s * 0.045;   // 箭头宽
+  const lw  = s < 32 ? 1.5 : s * 0.04;
+
+  ctx.save();
+  ctx.globalAlpha = 0.7;
+
+  const arrowGrad = ctx.createLinearGradient(cx - len, cy - len, cx + len, cy + len);
+  arrowGrad.addColorStop(0,   'rgba(255,255,255,0.9)');
+  arrowGrad.addColorStop(1,   'rgba(255,255,255,0.6)');
+  ctx.strokeStyle = arrowGrad;
+  ctx.fillStyle   = arrowGrad;
+  ctx.lineWidth   = lw;
+  ctx.lineCap     = 'round';
+
+  // 右上箭头 (→ 斜上)
+  const x1s = cx - len * 0.6, y1s = cy + len * 0.1;
+  const x1e = cx + len * 0.4, y1e = cy - len * 0.8;
+  ctx.beginPath();
+  ctx.moveTo(x1s, y1s);
+  ctx.lineTo(x1e, y1e);
+  ctx.stroke();
+  drawArrowHead(ctx, x1s, y1s, x1e, y1e, aw);
+
+  // 左下箭头 (← 斜下)
+  const x2s = cx + len * 0.6, y2s = cy - len * 0.1;
+  const x2e = cx - len * 0.4, y2e = cy + len * 0.8;
+  ctx.beginPath();
+  ctx.moveTo(x2s, y2s);
+  ctx.lineTo(x2e, y2e);
+  ctx.stroke();
+  drawArrowHead(ctx, x2s, y2s, x2e, y2e, aw);
+
+  ctx.restore();
+}
+
+function drawArrowHead(ctx, fromX, fromY, toX, toY, size) {
+  const angle = Math.atan2(toY - fromY, toX - fromX);
+  ctx.beginPath();
+  ctx.moveTo(toX, toY);
+  ctx.lineTo(toX - size * Math.cos(angle - Math.PI / 6), toY - size * Math.sin(angle - Math.PI / 6));
+  ctx.lineTo(toX - size * Math.cos(angle + Math.PI / 6), toY - size * Math.sin(angle + Math.PI / 6));
+  ctx.closePath();
+  ctx.fill();
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y,         x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h,     x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h,         x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y,             x + r, y);
+  ctx.closePath();
+}
+
+// ─── 下载工具 ─────────────────────────────────────────────
+function downloadOne(id, filename) {
+  const a = document.createElement('a');
+  a.download = filename;
+  a.href = document.getElementById(id).toDataURL('image/png');
+  a.click();
+}
+
+function downloadAll() {
+  const items = [
+    { id: 'c128', name: 'icon128.png' },
+    { id: 'c48',  name: 'icon48.png'  },
+    { id: 'c32',  name: 'icon32.png'  },
+    { id: 'c16',  name: 'icon16.png'  },
+  ];
+  items.forEach(function(item, i) {
+    setTimeout(function() { downloadOne(item.id, item.name); }, i * 200);
+  });
+}
+
+// ─── 初始化：渲染全部尺寸 ─────────────────────────────────
+['c128','c48','c32','c16'].forEach(function(id) {
+  drawIcon(document.getElementById(id));
+});
+</script>
+
+<div class="note" style="margin-top:0">
+  <strong style="color:#a5b4fc">📋 manifest.json 更新方式</strong><br><br>
+  在 <code>"action"</code> 里添加：<br><br>
+  <code style="display:block;text-align:left;padding:10px;margin-top:8px;white-space:pre;line-height:1.6">"icons": {
+  "16":  "images/icon16.png",
+  "32":  "images/icon32.png",
+  "48":  "images/icon48.png",
+  "128": "images/icon128.png"
+},
+"action": {
+  "default_popup": "popup.html",
+  "default_icon": {
+    "16":  "images/icon16.png",
+    "32":  "images/icon32.png",
+    "48":  "images/icon48.png",
+    "128": "images/icon128.png"
+  }
+}</code>
+</div>
+
+</body>
+</html>
+
+</div>
+
+</body>
+</html>
+
+</div>
+
+</body>
+</html>

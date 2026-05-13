@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Translator Settings</title>
+  <link rel="stylesheet" href="settings.css">
+</head>
+<body>
+  <div class="settings-container">
+    <!-- Header -->
+    <header class="settings-header">
+      <h1>Settings</h1>
+    </header>
+
+    <!-- License / Activation -->
+    <section class="settings-section license-section" id="licenseSection">
+      <h2 class="section-title">🔑 License</h2>
+
+      <!-- FREE state -->
+      <div id="licenseStateFree">
+        <div class="license-banner">
+          <div class="license-banner-left">
+            <span class="license-tier-badge free">FREE</span>
+            <div>
+              <p class="license-title">免费版</p>
+              <p class="license-sub" id="usageText">今日已使用 <b id="usedCount">–</b> / 20 次</p>
+            </div>
+          </div>
+          <a class="btn btn-upgrade" id="buyBtn" href="landing.html" target="_blank">
+            🚀 买断解锁 · $5
+          </a>
+        </div>
+        <div class="license-input-row">
+          <input type="text" id="licenseKeyInput" class="form-input license-input"
+            placeholder="输入 License Key（AITX-XXXX-XXXX-XXXX）" autocomplete="off" spellcheck="false">
+          <button class="btn btn-primary btn-activate" id="activateBtn">激活</button>
+        </div>
+        <p class="license-hint">购买后会收到 License Key，填入上方即可永久解锁无限翻译。</p>
+      </div>
+
+      <!-- ACTIVATED state (hidden by default) -->
+      <div id="licenseStateActivated" class="hidden">
+        <div class="license-banner activated">
+          <div class="license-banner-left">
+            <span class="license-tier-badge pro">PRO</span>
+            <div>
+              <p class="license-title">完整版已激活 ✓</p>
+              <p class="license-sub" id="activatedKeyDisplay">KEY: –</p>
+            </div>
+          </div>
+          <button class="btn btn-secondary btn-sm" id="deactivateBtn">移除 Key</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- API Configuration -->
+    <section class="settings-section">
+      <h2 class="section-title">API Configuration</h2>
+      <div class="form-group">
+        <label class="form-label" for="apiProvider">API Provider</label>
+        <select id="apiProvider" class="form-input">
+          <option value="free">🆓 Free (MyMemory) — No API Key needed</option>
+          <option value="deepseek">DeepSeek</option>
+          <option value="openai">OpenAI</option>
+          <option value="anthropic">Anthropic Claude</option>
+          <option value="custom">Custom</option>
+        </select>
+        <p class="form-hint" id="freeHint">
+          使用 MyMemory 免费翻译服务，无需 API Key，每天约 5000 词额度。
+        </p>
+      </div>
+      
+      <!-- API fields: hidden when "free" provider is selected -->
+      <div id="apiFields">
+        <div class="form-group">
+          <label class="form-label" for="apiKey">API Key</label>
+          <div class="input-with-action">
+            <input type="password" id="apiKey" class="form-input" placeholder="Enter your API key...">
+            <button type="button" class="toggle-visibility" id="toggleKey" title="Show/Hide">
+              <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="baseUrl">API Base URL</label>
+          <input type="url" id="baseUrl" class="form-input" placeholder="https://api.openai.com/v1/chat/completions">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="model">Model</label>
+          <input type="text" id="model" class="form-input" placeholder="gpt-3.5-turbo">
+        </div>
+      </div>
+    </section>
+
+    <!-- Translation Preferences -->
+    <section class="settings-section">
+      <h2 class="section-title">Translation Preferences</h2>
+      <div class="form-group">
+        <label class="form-label" for="defaultSource">Default Source Language</label>
+        <select id="defaultSource" class="form-input">
+          <option value="auto">Auto Detect</option>
+          <option value="en">English</option>
+          <option value="zh">中文</option>
+          <option value="ja">日本語</option>
+          <option value="ko">한국어</option>
+          <option value="fr">Français</option>
+          <option value="de">Deutsch</option>
+          <option value="es">Español</option>
+          <option value="ru">Русский</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="defaultTarget">Default Target Language</label>
+        <select id="defaultTarget" class="form-input">
+          <option value="zh">中文</option>
+          <option value="en">English</option>
+          <option value="ja">日本語</option>
+          <option value="ko">한국어</option>
+          <option value="fr">Français</option>
+          <option value="de">Deutsch</option>
+          <option value="es">Español</option>
+          <option value="ru">Русский</option>
+        </select>
+      </div>
+    </section>
+
+    <!-- Actions -->
+    <section class="settings-actions">
+      <button type="button" class="btn btn-secondary" id="resetBtn">Reset</button>
+      <button type="button" class="btn btn-primary" id="saveBtn">Save Settings</button>
+    </section>
+  </div>
+  <script src="settings.js"></script>
+</body>
+</html>

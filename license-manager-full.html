@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>License Key 管理系统 - AI Translator</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+    .container { max-width: 1200px; margin: 0 auto; }
+    
+    header {
+      background: white;
+      padding: 32px;
+      border-radius: 16px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+      margin-bottom: 32px;
+    }
+    h1 {
+      font-size: 32px;
+      color: #1e293b;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .subtitle { color: #64748b; font-size: 16px; }
+    
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+    .stat-card {
+      background: white;
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    .stat-label {
+      font-size: 14px;
+      color: #64748b;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .stat-value {
+      font-size: 42px;
+      font-weight: 700;
+      color: #1e293b;
+    }
+    .stat-card.total { border-left: 4px solid #6366f1; }
+    .stat-card.used { border-left: 4px solid #ef4444; }
+    .stat-card.used .stat-value { color: #ef4444; }
+    .stat-card.available { border-left: 4px solid #10b981; }
+    .stat-card.available .stat-value { color: #10b981; }
+    
+    .section {
+      background: white;
+      padding: 32px;
+      border-radius: 16px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+      margin-bottom: 24px;
+    }
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+    .section-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #1e293b;
+    }
+    
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-primary {
+      background: #6366f1;
+      color: white;
+    }
+    .btn-primary:hover {
+      background: #4f46e5;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(99,102,241,0.3);
+    }
+    .btn-success {
+      background: #10b981;
+      color: white;
+    }
+    .btn-success:hover {
+      background: #059669;
+    }
+    
+    .key-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 12px;
+    }
+    .key-item {
+      padding: 12px 16px;
+      background: #f8fafc;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      font-family: 'Monaco', 'Courier New', monospace;
+      font-size: 13px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.2s;
+    }
+    .key-item:hover {
+      border-color: #6366f1;
+      background: #f0f1ff;
+    }
+    .key-item.used {
+      background: #fef2f2;
+      border-color: #fecaca;
+      opacity: 0.6;
+    }
+    .key-item .copy-btn {
+      padding: 4px 8px;
+      font-size: 11px;
+      background: #6366f1;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .key-item .copy-btn:hover {
+      background: #4f46e5;
+    }
+    
+    .quick-action {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      padding: 24px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .quick-action h3 {
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+    .quick-action p {
+      opacity: 0.9;
+      font-size: 14px;
+    }
+    .quick-action .btn {
+      background: white;
+      color: #667eea;
+      font-size: 16px;
+      padding: 12px 24px;
+    }
+    
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal.active { display: flex; }
+    .modal-content {
+      background: white;
+      padding: 32px;
+      border-radius: 16px;
+      max-width: 500px;
+      width: 90%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    .modal-content h3 {
+      font-size: 20px;
+      margin-bottom: 16px;
+      color: #1e293b;
+    }
+    .form-group {
+      margin-bottom: 16px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: #475569;
+      margin-bottom: 8px;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    .form-group input:focus {
+      outline: none;
+      border-color: #6366f1;
+    }
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+    }
+    .modal-actions .btn {
+      flex: 1;
+    }
+    
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: white;
+      padding: 16px 24px;
+      border-radius: 8px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      display: none;
+      z-index: 2000;
+      animation: slideIn 0.3s ease;
+    }
+    .toast.show { display: block; }
+    .toast.success { border-left: 4px solid #10b981; }
+    .toast.error { border-left: 4px solid #ef4444; }
+    @keyframes slideIn {
+      from { transform: translateX(400px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🔑 License Key 管理系统</h1>
+      <p class="subtitle">AI Translator Pro - 激活码管理与追踪</p>
+    </header>
+
+    <div class="stats">
+      <div class="stat-card total">
+        <div class="stat-label">总计</div>
+        <div class="stat-value" id="totalCount">50</div>
+      </div>
+      <div class="stat-card used">
+        <div class="stat-label">已使用</div>
+        <div class="stat-value" id="usedCount">0</div>
+      </div>
+      <div class="stat-card available">
+        <div class="stat-label">可用</div>
+        <div class="stat-value" id="availableCount">50</div>
+      </div>
+    </div>
+
+    <div class="quick-action">
+      <div>
+        <h3>🚀 快速发送 License Key</h3>
+        <p>点击按钮复制下一个可用的激活码，然后发送给用户</p>
+      </div>
+      <button class="btn" id="quickCopyBtn">复制下一个 Key</button>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <h2 class="section-title">📋 未使用的 Keys</h2>
+        <span id="availableCountText">50 个可用</span>
+      </div>
+      <div class="key-grid" id="availableKeys">
+        <!-- 动态生成 -->
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <h2 class="section-title">✅ 已使用的 Keys</h2>
+        <span id="usedCountText">0 个已使用</span>
+      </div>
+      <div id="usedKeys">
+        <p style="color:#94a3b8;text-align:center;padding:40px;">暂无已使用的 Key</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 标记已使用弹窗 -->
+  <div id="markUsedModal" class="modal">
+    <div class="modal-content">
+      <h3>标记 Key 为已使用</h3>
+      <div class="form-group">
+        <label>License Key</label>
+        <input type="text" id="modalKeyInput" readonly>
+      </div>
+      <div class="form-group">
+        <label>用户邮箱</label>
+        <input type="email" id="modalEmailInput" placeholder="user@example.com">
+      </div>
+      <div class="form-group">
+        <label>备注（可选）</label>
+        <input type="text" id="modalNoteInput" placeholder="例如：首位用户">
+      </div>
+      <div class="modal-actions">
+        <button class="btn" onclick="closeModal()" style="background:#e2e8f0;color:#475569;">取消</button>
+        <button class="btn btn-primary" onclick="confirmMarkUsed()">确认标记</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast 提示 -->
+  <div id="toast" class="toast"></div>
+
+  <script>
+    // 所有 License Keys（从 LICENSE_KEYS.md 复制）
+    const allKeys = [
+      'AITX-A7K9-M3R6-P2W8', 'AITX-B4J2-N8Q5-L1T7', 'AITX-C6H3-V9X4-K7M2',
+      'AITX-D1F8-Z5Y7-J4N6', 'AITX-E9G2-W6R3-H8Q1', 'AITX-F3K7-T4P9-M6V2',
+      'AITX-G8L5-X2N7-R9W4', 'AITX-H2M6-Q8K3-P5T1', 'AITX-J7N4-V3L9-X6R8',
+      'AITX-K1P9-M5W2-N7Q4', 'AITX-L5Q3-R8T6-W2X9', 'AITX-M9V7-K4N2-P6J8',
+      'AITX-N3W5-L9Q7-T4R1', 'AITX-P8X2-M6V4-K9N3', 'AITX-Q4R7-N2W8-L5P6',
+      'AITX-R1T9-P7X3-M8Q2', 'AITX-S6V4-K8R2-N9W5', 'AITX-T2W6-L4P9-Q7V3',
+      'AITX-U9X5-M3T8-R6K1', 'AITX-V3Y7-N9W4-P2L8', 'AITX-W8Z2-Q6X5-T4M9',
+      'AITX-X4A6-R9K3-V7N2', 'AITX-Y7B9-P2L5-W8Q4', 'AITX-Z1C8-M6T3-X9R7',
+      'AITX-A3D5-N8V2-K4P9', 'AITX-B9E2-Q7W4-L6T8', 'AITX-C5F7-R3X9-M2N6',
+      'AITX-D8G4-P6K2-V9Q3', 'AITX-E2H9-T5L7-W4X8', 'AITX-F6J3-M8R2-N9P5',
+      'AITX-G1K8-Q4V6-T7W2', 'AITX-H7L4-X9N3-R5M8', 'AITX-J3M6-K2P8-W9Q4',
+      'AITX-K9N2-L7T5-V3X6', 'AITX-L4P8-M9R6-Q2W7', 'AITX-M6Q3-N5V9-T8X2',
+      'AITX-N8R5-P4W7-K9L3', 'AITX-P2T9-Q8X4-M6V7', 'AITX-Q7V6-R3N8-W5P2',
+      'AITX-R4W8-T9K5-L7Q3', 'AITX-S9X3-V6M2-N8R4', 'AITX-T5Y8-W4P7-Q9K6',
+      'AITX-U2Z6-X9L3-R5T8', 'AITX-V8A4-N7M9-P6W2', 'AITX-W3B7-Q5X8-T2K9',
+      'AITX-X9C2-R6V4-M8L3', 'AITX-Y5D8-P3W7-N9Q4', 'AITX-Z2E6-T8K5-L4X9',
+      'AITX-A8F3-M9R7-V6P2', 'AITX-B4G9-N6Q3-W8T5'
+    ];
+
+    // 从 localStorage 获取已使用的 Keys
+    let usedKeys = JSON.parse(localStorage.getItem('usedKeys') || '[]');
+
+    function init() {
+      renderStats();
+      renderAvailableKeys();
+      renderUsedKeys();
+    }
+
+    function renderStats() {
+      const used = usedKeys.length;
+      const available = allKeys.length - used;
+      document.getElementById('totalCount').textContent = allKeys.length;
+      document.getElementById('usedCount').textContent = used;
+      document.getElementById('availableCount').textContent = available;
+      document.getElementById('availableCountText').textContent = `${available} 个可用`;
+      document.getElementById('usedCountText').textContent = `${used} 个已使用`;
+    }
+
+    function renderAvailableKeys() {
+      const container = document.getElementById('availableKeys');
+      const availableKeys = allKeys.filter(key => !usedKeys.find(u => u.key === key));
+      
+      container.innerHTML = availableKeys.map(key => `
+        <div class="key-item">
+          <span>${key}</span>
+          <button class="copy-btn" onclick="copyKey('${key}')">复制</button>
+        </div>
+      `).join('');
+    }
+
+    function renderUsedKeys() {
+      const container = document.getElementById('usedKeys');
+      if (usedKeys.length === 0) {
+        container.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:40px;">暂无已使用的 Key</p>';
+        return;
+      }
+
+      container.innerHTML = `
+        <table style="width:100%;border-collapse:collapse;">
+          <thead>
+            <tr style="background:#f8fafc;text-align:left;">
+              <th style="padding:12px;font-size:13px;color:#64748b;">License Key</th>
+              <th style="padding:12px;font-size:13px;color:#64748b;">用户邮箱</th>
+              <th style="padding:12px;font-size:13px;color:#64748b;">使用时间</th>
+              <th style="padding:12px;font-size:13px;color:#64748b;">备注</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${usedKeys.map(item => `
+              <tr style="border-bottom:1px solid #e2e8f0;">
+                <td style="padding:12px;font-family:monospace;font-size:13px;">${item.key}</td>
+                <td style="padding:12px;font-size:13px;">${item.email || '-'}</td>
+                <td style="padding:12px;font-size:13px;">${item.date}</td>
+                <td style="padding:12px;font-size:13px;color:#64748b;">${item.note || '-'}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+    }
+
+    function copyKey(key) {
+      navigator.clipboard.writeText(key).then(() => {
+        showToast('✅ Key 已复制到剪贴板！', 'success');
+        
+        // 询问是否标记为已使用
+        setTimeout(() => {
+          if (confirm('Key 已复制！是否标记为已使用？')) {
+            openMarkUsedModal(key);
+          }
+        }, 500);
+      }).catch(() => {
+        showToast('❌ 复制失败', 'error');
+      });
+    }
+
+    // 快速复制下一个可用 Key
+    document.getElementById('quickCopyBtn').onclick = () => {
+      const availableKeys = allKeys.filter(key => !usedKeys.find(u => u.key === key));
+      if (availableKeys.length === 0) {
+        showToast('⚠️ 没有可用的 Key 了！', 'error');
+        return;
+      }
+      copyKey(availableKeys[0]);
+    };
+
+    let currentKey = '';
+
+    function openMarkUsedModal(key) {
+      currentKey = key;
+      document.getElementById('modalKeyInput').value = key;
+      document.getElementById('modalEmailInput').value = '';
+      document.getElementById('modalNoteInput').value = '';
+      document.getElementById('markUsedModal').classList.add('active');
+    }
+
+    function closeModal() {
+      document.getElementById('markUsedModal').classList.remove('active');
+    }
+
+    function confirmMarkUsed() {
+      const email = document.getElementById('modalEmailInput').value.trim();
+      if (!email) {
+        alert('请输入用户邮箱');
+        return;
+      }
+
+      const note = document.getElementById('modalNoteInput').value.trim();
+      const date = new Date().toISOString().split('T')[0];
+
+      usedKeys.push({ key: currentKey, email, date, note });
+      localStorage.setItem('usedKeys', JSON.stringify(usedKeys));
+
+      closeModal();
+      init();
+      showToast('✅ 已标记为使用！', 'success');
+    }
+
+    function showToast(message, type) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.className = `toast ${type} show`;
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+
+    // 初始化
+    init();
+  </script>
+</body>
+</html>
