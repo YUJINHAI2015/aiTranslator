@@ -22,6 +22,7 @@
     document.removeEventListener('keydown',   onKeyDown);
     document.removeEventListener('mouseup',   onMouseUp);
     document.removeEventListener('dblclick',  onDblClick);
+    document.removeEventListener('click',     onTripleClick);
     document.removeEventListener('mousedown', onDocMouseDown);
   }
 
@@ -492,6 +493,27 @@
     }, 10); // tiny delay so browser finishes selecting the word
   }
 
+  // ─── Event: click(detail≥3) — capture triple-click paragraph selection ────
+
+  function onTripleClick(e) {
+    if (!isContextValid()) { handleContextInvalidated(); return; }
+    if (e.detail < 3) return;
+    if (e.target.closest('#ai-translator-float, #ai-translator-popover, #ai-translator-panel')) return;
+
+    isDblClick = true;        // 压制后续 mouseup 的 debounce 逻辑
+    clearTimeout(debounceTimer);
+
+    setTimeout(() => {
+      const sel = window.getSelection();
+      const text = sel?.toString().trim();
+      if (!text || text.length === 0 || text.length >= 500) return;
+
+      selectedText   = text;
+      selectionRange = sel.rangeCount > 0 ? sel.getRangeAt(0).cloneRange() : null;
+      showFloatingIcon(e.clientX, e.clientY);
+    }, 10);
+  }
+
   // ─── Event: mouseup — capture manual drag selections ─────────────────────
 
   function onMouseUp(e) {
@@ -503,7 +525,7 @@
 
     clearTimeout(debounceTimer);
 
-    // Delay to let dblclick fire first; if dblclick sets the flag, skip
+    // Delay to let dblclick / tripleclick fire first; if either sets the flag, skip
     debounceTimer = setTimeout(() => {
       if (isDblClick) { isDblClick = false; return; }
 
@@ -561,6 +583,7 @@
   document.addEventListener('keydown',   onKeyDown);
   document.addEventListener('mouseup',   onMouseUp);
   document.addEventListener('dblclick',  onDblClick);
+  document.addEventListener('click',     onTripleClick);
   document.addEventListener('mousedown', onDocMouseDown);
 
   // ─── Right-side panel (kept for popup / Alt+T fallback) ──────────────────
