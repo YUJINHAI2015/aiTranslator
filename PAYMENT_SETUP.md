@@ -23,7 +23,7 @@ translate/
 ### 用户端：
 1. 点击「立即购买」按钮 → 弹出支付弹窗
 2. 选择微信/支付宝 → 扫码支付 ¥35
-3. 支付成功后截图 → 发送至 yujinhai2019@163.com
+3. 支付成功后截图 → 发送至 roomyu0303@gmail.com
 
 ### 你的端：
 1. 收到邮件后打开 `LICENSE_KEYS.md`
@@ -35,7 +35,7 @@ translate/
 
 - [x] 支付弹窗 UI（微信/支付宝切换）
 - [x] 价格改为 ¥35
-- [x] 邮箱地址：yujinhai2019@163.com
+- [x] 邮箱地址：roomyu0303@gmail.com
 - [x] 50 个预制 License Keys
 
 ## 📋 待办事项

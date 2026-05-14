@@ -195,8 +195,9 @@
     .payment-tab.active { border-color: #6366f1; background: #f0f1ff; color: #6366f1; }
     #paidDoneBtn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(16,185,129,0.45); }
     #paidDoneBtn:active { transform: translateY(0); }
-    #sendEmailBtn:hover, #copyEmailBtn:hover, #showWxBtn:hover { transform: translateX(2px); }
     #dropZone:hover { border-color: #a5b4fc; background: #f5f3ff; }
+    #submitScreenshotBtn:not([disabled]):hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(99,102,241,0.45); opacity:1; }
+    #submitScreenshotBtn:not([disabled]):active { transform: translateY(0); }
     .payment-qr-container { position: relative; min-height: 280px; }
     .payment-qr {
       display: none;
@@ -367,7 +368,7 @@
       <div class="footer-logo">AI Translator</div>
       <div class="footer-links">
         <a href="#how">演示</a><a href="#pricing">定价</a>
-        <a href="settings.html">设置</a><a href="mailto:yujinhai2019@163.com">支持</a>
+        <a href="settings.html">设置</a><a href="mailto:roomyu0303@gmail.com">支持</a>
         <a href="#">隐私政策</a>
       </div>
       <div class="footer-copy">© 2025 AI Translator · Built with ♥ · Chrome Extension</div>
@@ -418,8 +419,7 @@
 
         <div style="margin-top:16px;padding:12px 14px;background:#f0fdf4;border-radius:10px;border:1px solid #bbf7d0;">
           <p style="font-size:13px;color:#166534;line-height:1.7;margin:0;">
-            💡 付款备注填写邮箱 <strong id="emailReminder"></strong>，方便核对<br>
-            📧 付款后请发截图到 <a href="mailto:yujinhai2019@163.com" style="color:#166534;font-weight:600;">yujinhai2019@163.com</a>，我会立即发送 Key
+            💡 付款备注填写邮箱 <strong id="emailReminder"></strong>，方便核对
           </p>
         </div>
 
@@ -441,7 +441,6 @@
         <div style="text-align:center;margin-bottom:18px;">
           <div style="font-size:44px;margin-bottom:8px;">🧾</div>
           <h3 style="font-size:19px;color:#1e293b;margin:0 0 4px;">发送付款截图</h3>
-          <p id="paidEmailLabel" style="font-size:13px;color:#6366f1;margin:0;"></p>
         </div>
 
         <!-- 截图上传区 -->
@@ -459,52 +458,33 @@
           <p id="previewName" style="display:none;font-size:12px;color:#6366f1;margin:6px 0 0;"></p>
         </div>
 
-        <!-- 发送方式 -->
-        <p style="font-size:13px;font-weight:600;color:#475569;margin:0 0 10px;text-align:center;">选择发送方式</p>
-        <div style="display:flex;flex-direction:column;gap:10px;">
+        <!-- 一键发送按钮 -->
+        <button id="submitScreenshotBtn" disabled style="
+          margin-top:4px;width:100%;padding:15px;
+          background:linear-gradient(135deg,#6366f1,#7c3aed);
+          color:#fff;border:none;border-radius:12px;
+          font-size:16px;font-weight:700;cursor:not-allowed;opacity:0.45;
+          transition:opacity .2s,transform .15s,box-shadow .15s;
+          box-shadow:0 4px 16px rgba(99,102,241,0.3);letter-spacing:.02em;">
+          📤 发送截图给卖家
+        </button>
 
-          <!-- 方式1：邮件（含截图附件说明） -->
-          <button id="sendEmailBtn" style="
-            display:flex;align-items:center;gap:12px;
-            width:100%;padding:13px 16px;
-            background:#fff;border:1.5px solid #c7d2fe;border-radius:12px;
-            font-size:14px;font-weight:600;color:#1e293b;cursor:pointer;
-            transition:border-color .2s,background .2s;text-align:left;">
-            <span style="font-size:22px;">📧</span>
-            <span>
-              <span style="display:block;">发送邮件给我</span>
-              <span style="font-size:12px;font-weight:400;color:#94a3b8;">yujinhai2019@163.com · 附上截图</span>
-            </span>
+        <!-- 复制商家邮箱快捷条 -->
+        <div style="margin-top:10px;display:flex;align-items:center;gap:8px;background:#f0f1ff;border:1px solid #c7d2fe;border-radius:10px;padding:9px 14px;">
+          <span style="font-size:12px;color:#64748b;flex:1;">截图发送后，卖家将通过邮件发送 Key 给您</span>
+          <button id="copySellerEmailBtn"
+            data-email="roomyu0303@gmail.com"
+            style="background:#6366f1;color:#fff;border:none;border-radius:6px;padding:5px 14px;font-size:12px;cursor:pointer;font-weight:600;white-space:nowrap;flex-shrink:0;">
+            📋 复制商家邮箱
           </button>
-
-          <!-- 方式2：复制邮箱 -->
-          <button id="copyEmailBtn" style="
-            display:flex;align-items:center;gap:12px;
-            width:100%;padding:13px 16px;
-            background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;
-            font-size:14px;font-weight:600;color:#1e293b;cursor:pointer;
-            transition:border-color .2s,background .2s;text-align:left;">
-            <span style="font-size:22px;">📋</span>
-            <span>
-              <span style="display:block;">复制邮箱地址</span>
-              <span style="font-size:12px;font-weight:400;color:#94a3b8;">然后自行在邮件 App 中附上截图发送</span>
-            </span>
-          </button>
-
         </div>
 
-        <!-- 复制成功提示 -->
-        <div id="copyToast" style="
-          display:none;margin-top:12px;padding:10px 14px;
-          background:#1e293b;color:#fff;border-radius:8px;
-          font-size:13px;text-align:center;">
-          ✅ 邮箱已复制！去邮件 App 粘贴发送（记得附上截图）
-        </div>
+        <!-- 发送状态反馈 -->
+        <div id="sendStatus" style="display:none;margin-top:12px;padding:12px 14px;border-radius:10px;font-size:13px;text-align:center;line-height:1.7;"></div>
 
         <!-- 底部说明 -->
-        <div style="margin-top:16px;padding:12px;background:#f8fafc;border-radius:10px;font-size:12px;color:#94a3b8;text-align:center;line-height:1.8;">
-          收到截图后我会在 <strong style="color:#1e293b;">30 分钟内</strong> 发送 License Key 到您的邮箱<br>
-          <span id="paidEmailBottom" style="color:#6366f1;font-weight:600;"></span>
+        <div style="margin-top:14px;padding:12px;background:#f8fafc;border-radius:10px;font-size:12px;color:#94a3b8;text-align:center;line-height:1.8;">
+          截图发送后，卖家会在 <strong style="color:#1e293b;">30 分钟内</strong> 通过邮件发送 License Key ✅
         </div>
       </div>
 
@@ -526,7 +506,7 @@
           <p style="margin:0;">
             1. 垃圾邮件 / 广告邮件文件夹<br>
             2. 邮箱地址是否正确<br>
-            3. 联系 <a href="mailto:yujinhai2019@163.com" style="color:#6366f1;">yujinhai2019@163.com</a>
+            3. 联系 <a href="mailto:roomyu0303@gmail.com" style="color:#6366f1;">roomyu0303@gmail.com</a>
           </p>
         </div>
       </div>
@@ -537,4 +517,35 @@
   <script src="landing.js"></script>
 </body>
 </html>
+
+
+        <h3 style="font-size:20px;color:#1e293b;margin-bottom:8px;">已收到你的购买信息！</h3>
+        <p style="font-size:14px;color:#64748b;line-height:1.7;margin-bottom:20px;">
+          请将付款截图发送至邮件，<br>
+          License Key 将在 <strong style="color:#1e293b;">30 分钟内</strong>发送至：
+        </p>
+        <div id="waitingEmail" style="font-size:15px;font-weight:700;color:#6366f1;background:#f0f1ff;border-radius:8px;padding:10px 16px;margin-bottom:20px;word-break:break-all;"></div>
+        <a id="waitingMailto" href="#"
+          style="display:block;width:100%;padding:13px;background:linear-gradient(135deg,#6366f1,#7c3aed);color:#fff;border-radius:10px;font-size:14px;font-weight:700;text-decoration:none;margin-bottom:16px;box-sizing:border-box;">
+          📧 点击发送付款截图
+        </a>
+        <div style="background:#f8fafc;border-radius:10px;padding:14px;text-align:left;font-size:13px;color:#475569;line-height:1.8;">
+          <p style="margin:0 0 4px 0;">📌 收不到 Key 时请检查：</p>
+          <p style="margin:0;">
+            1. 垃圾邮件 / 广告邮件文件夹<br>
+            2. 邮箱地址是否正确<br>
+            3. 联系 <a href="mailto:roomyu0303@gmail.com" style="color:#6366f1;">roomyu0303@gmail.com</a>
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="landing.js"></script>
+</body>
+</html>
+
+
+
 
