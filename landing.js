@@ -345,14 +345,32 @@ document.querySelectorAll('.feat-card, .step, .pf-item').forEach(function(el, i)
             submitScreenshotBtn.style.background = 'linear-gradient(135deg,#10b981,#059669)';
             submitScreenshotBtn.style.opacity    = '1';
             if (sendStatus) {
+              var licKey = data.key || '';
               sendStatus.style.display    = 'block';
               sendStatus.style.background = '#f0fdf4';
               sendStatus.style.border     = '1px solid #bbf7d0';
               sendStatus.style.color      = '#166534';
-              sendStatus.innerHTML        = '🎉 <strong>截图已成功发送给卖家！</strong>'
+              sendStatus.innerHTML =
+                '🎉 <strong>截图已成功发送给卖家！</strong>'
+                + (licKey
+                  ? '<div style="margin-top:12px;background:#fff;border:1px solid #bbf7d0;border-radius:10px;padding:12px 14px;">'
+                    + '<div style="font-size:11px;color:#64748b;margin-bottom:6px;letter-spacing:.5px;">您的 LICENSE KEY</div>'
+                    + '<div style="display:flex;align-items:center;gap:8px;">'
+                    + '<code id="generatedKey" style="flex:1;font-size:15px;font-weight:700;color:#6366f1;letter-spacing:1px;background:#f0f1ff;padding:6px 10px;border-radius:6px;word-break:break-all;">' + licKey + '</code>'
+                    + '<button id="copyKeyBtn" style="flex-shrink:0;padding:6px 12px;background:#6366f1;color:#fff;border:none;border-radius:6px;font-size:12px;cursor:pointer;white-space:nowrap;">📋 复制</button>'
+                    + '</div>'
+                    + '</div>'
+                  : '')
                 + '<div style="margin-top:8px;font-size:12px;color:#475569;line-height:1.8;">'
-                + '卖家将在 <strong style="color:#1e293b;">30 分钟内</strong> 通过邮件发送 License Key 给您'
+                + '卖家核对截图后，将通过邮件确认 Key，请妥善保存'
                 + '</div>';
+              // 绑定复制按钮
+              var copyKeyBtn = document.getElementById('copyKeyBtn');
+              if (copyKeyBtn && licKey) {
+                copyKeyBtn.onclick = function() {
+                  copyText(licKey, copyKeyBtn, '📋 复制');
+                };
+              }
             }
           } else {
             throw new Error(data.error || '发送失败');
