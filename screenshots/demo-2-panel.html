@@ -1,0 +1,231 @@
+<!-- 截图 2: 弹窗式翻译面板 -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Translator - 截图演示 #2</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+    .container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      width: 100%;
+      max-width: 1000px;
+      padding: 40px;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    .header h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      margin-bottom: 30px;
+    }
+    .left-panel {
+      background: #f8f9fa;
+      padding: 24px;
+      border-radius: 12px;
+      position: relative;
+    }
+    .right-panel {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 24px;
+      border-radius: 12px;
+      color: white;
+      position: relative;
+    }
+    .panel-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 16px;
+      opacity: 0.7;
+      font-weight: 600;
+    }
+    .demo-label {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: #667eea;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .right-panel .demo-label {
+      background: rgba(255,255,255,0.3);
+    }
+    .text-content {
+      font-size: 15px;
+      line-height: 1.8;
+      color: #333;
+      margin-bottom: 20px;
+    }
+    .right-panel .text-content {
+      color: white;
+      opacity: 0.9;
+    }
+    .translation-item {
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid rgba(0,0,0,0.1);
+    }
+    .right-panel .translation-item {
+      border-bottom-color: rgba(255,255,255,0.2);
+    }
+    .translation-item:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+    .original-text {
+      font-size: 13px;
+      color: #999;
+      margin-bottom: 8px;
+    }
+    .right-panel .original-text {
+      opacity: 0.8;
+    }
+    .translated-text {
+      font-size: 16px;
+      font-weight: 500;
+      color: #667eea;
+    }
+    .right-panel .translated-text {
+      color: white;
+      font-weight: 600;
+    }
+    .controls {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+      flex-wrap: wrap;
+    }
+    button {
+      padding: 10px 16px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .btn-primary {
+      background: #667eea;
+      color: white;
+    }
+    .btn-secondary {
+      background: #f0f1ff;
+      color: #667eea;
+    }
+    .right-panel .btn-primary {
+      background: rgba(255,255,255,0.2);
+      color: white;
+    }
+    .right-panel .btn-secondary {
+      background: rgba(255,255,255,0.1);
+      color: white;
+    }
+    .badge {
+      display: inline-block;
+      background: #e8eaff;
+      color: #667eea;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-top: 12px;
+    }
+    .right-panel .badge {
+      background: rgba(255,255,255,0.2);
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🌍 AI Translator 翻译面板</h1>
+      <p style="color: #666;">实时翻译，即刻理解</p>
+    </div>
+
+    <div class="content">
+      <div class="left-panel">
+        <div class="demo-label">原文</div>
+        <div class="panel-label">📝 英文</div>
+        <div class="text-content">
+          <p style="margin-bottom: 16px;">
+            The future of technology lies in artificial intelligence and machine learning. These fields are transforming industries and creating new opportunities.
+          </p>
+        </div>
+      </div>
+
+      <div class="right-panel">
+        <div class="demo-label">译文</div>
+        <div class="panel-label">🌐 中文</div>
+        <div class="text-content">
+          <p style="margin-bottom: 16px;">
+            技术的未来在于人工智能和机器学习。这些领域正在改变行业、创造新机遇。
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div style="background: #f8f9fa; padding: 24px; border-radius: 12px; margin-bottom: 30px;">
+      <div class="panel-label" style="color: #333;">📚 多语言翻译示例</div>
+      
+      <div class="translation-item">
+        <div class="original-text">💬 英文原文</div>
+        <div class="translated-text">Breakthrough in neural networks</div>
+      </div>
+
+      <div class="translation-item">
+        <div class="original-text">🇨🇳 中文翻译</div>
+        <div class="translated-text">神经网络的突破</div>
+      </div>
+
+      <div class="translation-item">
+        <div class="original-text">🇯🇵 日文翻译</div>
+        <div class="translated-text">ニューラルネットワークの突破口</div>
+      </div>
+
+      <div class="translation-item">
+        <div class="original-text">🇫🇷 法文翻译</div>
+        <div class="translated-text">Percée dans les réseaux de neurones</div>
+      </div>
+    </div>
+
+    <div style="display: flex; justify-content: center; gap: 12px;">
+      <button class="btn-primary">📋 复制翻译</button>
+      <button class="btn-secondary">🔊 发音</button>
+      <button class="btn-secondary">💾 保存</button>
+      <button class="btn-secondary">⚙️ 设置</button>
+    </div>
+  </div>
+</body>
+</html>

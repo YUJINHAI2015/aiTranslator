@@ -1,0 +1,158 @@
+<!-- 截图 1: 双击选中文本后显示翻译浮窗 -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Translator - 截图演示 #1</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+    .container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      width: 100%;
+      max-width: 900px;
+      padding: 40px;
+      font-size: 16px;
+      line-height: 1.8;
+    }
+    .content-area {
+      position: relative;
+      background: #f8f9fa;
+      padding: 30px;
+      border-radius: 8px;
+      margin-bottom: 30px;
+    }
+    .content-text {
+      color: #333;
+      font-size: 16px;
+      line-height: 1.8;
+    }
+    .highlighted {
+      background: rgba(102, 126, 234, 0.2);
+      padding: 0 4px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    .floating-icon {
+      position: absolute;
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+      animation: pop-in 0.3s ease-out;
+    }
+    @keyframes pop-in {
+      from { transform: scale(0); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    .translation-popup {
+      position: absolute;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+      padding: 20px;
+      min-width: 300px;
+      z-index: 1000;
+      animation: slide-up 0.3s ease-out;
+    }
+    @keyframes slide-up {
+      from { transform: translateY(10px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .popup-title {
+      font-size: 12px;
+      color: #999;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      letter-spacing: 1px;
+    }
+    .popup-text {
+      font-size: 14px;
+      color: #333;
+      margin-bottom: 12px;
+      line-height: 1.6;
+    }
+    .popup-translation {
+      font-size: 14px;
+      color: #667eea;
+      font-weight: 500;
+      line-height: 1.6;
+      background: rgba(102, 126, 234, 0.08);
+      padding: 12px;
+      border-radius: 6px;
+      margin-top: 12px;
+    }
+    .demo-label {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: #667eea;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div style="text-align: center; margin-bottom: 40px;">
+      <h1 style="font-size: 28px; margin-bottom: 10px;">✨ AI Translator</h1>
+      <p style="color: #666;">双击任意文本即时翻译</p>
+    </div>
+
+    <div class="content-area">
+      <div class="demo-label">演示场景 1</div>
+      <div class="content-text">
+        <p style="margin-bottom: 16px;">
+          Artificial intelligence is revolutionizing how we work and learn. 
+          <span class="highlighted">Machine learning algorithms</span> can now recognize patterns in data faster than ever before.
+        </p>
+        <p>
+          These technologies are being applied to everything from 
+          <span class="highlighted">healthcare diagnostics</span> to autonomous vehicles, making our world smarter every day.
+        </p>
+      </div>
+
+      <!-- 浮窗图示 -->
+      <div style="position: relative; margin-top: 30px; height: 200px;">
+        <div class="floating-icon" style="top: 20px; right: 30px;">📖</div>
+        
+        <div class="translation-popup" style="top: 70px; right: 30px; width: 320px;">
+          <div class="popup-title">📍 选中文本</div>
+          <div class="popup-text">Machine learning algorithms</div>
+          <div class="popup-title" style="margin-top: 12px;">🌐 翻译结果</div>
+          <div class="popup-translation">机器学习算法</div>
+          <div style="margin-top: 16px; display: flex; gap: 10px;">
+            <button style="flex: 1; padding: 8px; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 13px;">📋 复制</button>
+            <button style="flex: 1; padding: 8px; background: #f0f1ff; color: #667eea; border: none; border-radius: 6px; cursor: pointer; font-size: 13px;">🔊 发音</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align: center; color: #999; font-size: 14px; margin-top: 40px;">
+      <p>💡 提示：选中网页上的任何文本，立即获得精准翻译</p>
+    </div>
+  </div>
+</body>
+</html>
