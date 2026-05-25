@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Translator - Privacy Policy</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      line-height: 1.8;
+      color: #333;
+      background: #f8f9fa;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      background: white;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    h1 { font-size: 32px; color: #667eea; margin-bottom: 10px; border-bottom: 3px solid #667eea; padding-bottom: 15px; }
+    h2 { font-size: 20px; color: #764ba2; margin-top: 30px; margin-bottom: 16px; }
+    .last-updated { color: #999; font-size: 13px; margin-bottom: 30px; }
+    p { margin-bottom: 12px; }
+    ul, ol { margin-left: 24px; margin-bottom: 16px; }
+    li { margin-bottom: 8px; }
+    .highlight { background: #f0f1ff; padding: 20px; border-left: 4px solid #667eea; margin: 20px 0; border-radius: 4px; }
+    .check-list { list-style: none; margin-left: 0; }
+    .check-list li:before { content: "✓ "; color: #4CAF50; font-weight: bold; margin-right: 8px; }
+    .cross-list li:before { content: "✗ "; color: #f44336; font-weight: bold; margin-right: 8px; }
+    .section { margin-bottom: 24px; }
+    .contact-box { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 8px; margin-top: 40px; }
+    .contact-box h3 { font-size: 18px; margin-bottom: 16px; }
+    .contact-box a { color: #ffd700; text-decoration: none; font-weight: 600; }
+    a { color: #667eea; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .footer { text-align: center; color: #999; font-size: 12px; margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔒 AI Translator — Privacy Policy</h1>
+    <p class="last-updated">Last Updated: May 2025</p>
+
+    <div class="section">
+      <h2>1. Overview</h2>
+      <p>AI Translator ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how our Chrome extension handles your data. <strong>We do not sell, rent, or share your personal data with third parties for marketing purposes.</strong></p>
+    </div>
+
+    <div class="section">
+      <h2>2. What We Collect</h2>
+
+      <h3 style="font-size:16px;color:#333;margin:16px 0 12px;">2.1 Text You Select for Translation</h3>
+      <p>When you double-click text on a webpage, AI Translator temporarily processes:</p>
+      <ul>
+        <li>The selected text (sent to OpenAI API for translation)</li>
+        <li>Your preferred target language (stored locally)</li>
+      </ul>
+      <p><strong>This text is transmitted to OpenAI for processing only. It is never stored on our servers.</strong></p>
+
+      <h3 style="font-size:16px;color:#333;margin:16px 0 12px;">2.2 Local Preferences</h3>
+      <ul>
+        <li>Your selected target language (stored in browser local storage)</li>
+        <li>UI preferences (stored in browser local storage)</li>
+      </ul>
+
+      <h3 style="font-size:16px;color:#333;margin:16px 0 12px;">2.3 What We Do NOT Collect</h3>
+      <ul class="check-list cross-list">
+        <li>Browsing history</li>
+        <li>Passwords or personal credentials</li>
+        <li>Cookies or tracking identifiers</li>
+        <li>Location data</li>
+        <li>IP addresses</li>
+        <li>Any page content beyond the text you explicitly select</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2>3. How We Use Your Data</h2>
+      <ol>
+        <li><strong>Translation</strong> — Selected text is sent to the OpenAI API solely to return a translation result.</li>
+        <li><strong>Preferences</strong> — Language settings are saved locally so you don't have to reconfigure each session.</li>
+      </ol>
+      <p>We do <strong>not</strong> use your data for advertising, profiling, or analytics.</p>
+    </div>
+
+    <div class="section">
+      <h2>4. Data Storage &amp; Retention</h2>
+      <ul class="check-list">
+        <li><strong>Local only:</strong> Preferences are stored in your browser's extension storage.</li>
+        <li><strong>No server storage:</strong> We operate no database that stores your translation content.</li>
+        <li><strong>Immediate deletion:</strong> Text passed to OpenAI is discarded after the API responds.</li>
+        <li><strong>User control:</strong> Uninstalling the extension removes all locally stored data.</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2>5. Third-Party Services</h2>
+      <p>AI Translator uses <strong>OpenAI API</strong> to process translation requests.</p>
+      <ul>
+        <li>OpenAI Privacy Policy: <a href="https://openai.com/privacy/" target="_blank">https://openai.com/privacy/</a></li>
+        <li>OpenAI does not use API inputs to train its models by default.</li>
+        <li>Text is transmitted over HTTPS.</li>
+      </ul>
+      <p>No other third-party services receive your data.</p>
+    </div>
+
+    <div class="section">
+      <h2>6. Data Security</h2>
+      <ul class="check-list">
+        <li>All API communications use HTTPS/TLS encryption.</li>
+        <li>API keys are stored as server-side environment variables, never in extension code.</li>
+        <li>No user database is maintained.</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2>7. Your Rights</h2>
+      <p>You may at any time:</p>
+      <ul>
+        <li><strong>Delete local data</strong> — uninstall the extension or clear extension storage via <code>chrome://extensions</code>.</li>
+        <li><strong>Opt out</strong> — stop using or uninstall the extension.</li>
+        <li><strong>Contact us</strong> — request information about data handling.</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2>8. Children's Privacy</h2>
+      <p>AI Translator is not directed at children under 13. We do not knowingly collect data from users under 13.</p>
+    </div>
+
+    <div class="section">
+      <h2>9. Changes to This Policy</h2>
+      <p>We will update the "Last Updated" date when this policy changes. Continued use of the extension after changes constitutes acceptance of the updated policy.</p>
+    </div>
+
+    <div class="section">
+      <h2>10. Compliance</h2>
+      <ul>
+        <li>Chrome Web Store Developer Program Policies</li>
+        <li>GDPR (General Data Protection Regulation)</li>
+        <li>CCPA (California Consumer Privacy Act)</li>
+      </ul>
+    </div>
+
+    <div class="highlight">
+      <strong>Summary:</strong> AI Translator only processes the text you select, sends it to OpenAI for translation, and returns the result to you. We store nothing on our servers and share nothing with third parties beyond OpenAI for the purpose of translation.
+    </div>
+
+    <div class="contact-box">
+      <h3>Contact Us</h3>
+      <p style="margin-bottom:16px;">Questions about this Privacy Policy?</p>
+      <p>📧 Email: <a href="mailto:roomyu0303@gmail.com">roomyu0303@gmail.com</a></p>
+      <p style="margin-top:8px;">📝 Chrome Web Store: Leave a review or use the support link on the extension page.</p>
+    </div>
+
+    <div class="footer">
+      <p>&copy; 2025 AI Translator. All rights reserved.</p>
+    </div>
+  </div>
+</body>
+</html>
