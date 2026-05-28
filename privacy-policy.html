@@ -54,25 +54,37 @@
       <h3 style="font-size:16px;color:#333;margin:16px 0 12px;">2.1 Text You Select for Translation</h3>
       <p>When you double-click text on a webpage, AI Translator temporarily processes:</p>
       <ul>
-        <li>The selected text (sent to OpenAI API for translation)</li>
-        <li>Your preferred target language (stored locally)</li>
+        <li>The selected text (sent to OpenAI API for translation only)</li>
+        <li>Your preferred target language (stored locally in browser)</li>
       </ul>
-      <p><strong>This text is transmitted to OpenAI for processing only. It is never stored on our servers.</strong></p>
+      <p><strong>This text is transmitted to OpenAI for processing only and is never stored on our servers.</strong></p>
 
-      <h3 style="font-size:16px;color:#333;margin:16px 0 12px;">2.2 Local Preferences</h3>
+      <h3 style="font-size:16px;color:#333;margin:16px 0 12px;">2.2 Payment Verification Data (Pro License Purchase)</h3>
+      <div style="background:#fff3cd;border-left:4px solid #ffc107;padding:16px;border-radius:4px;margin-bottom:16px;">
+        <strong>⚠️ Prominent Disclosure:</strong> When purchasing a Pro license, you voluntarily provide the following data through our payment verification form:
+      </div>
+      <ul>
+        <li><strong>Email address</strong> — used to identify your purchase and deliver your license key</li>
+        <li><strong>Payment screenshot</strong> — an image you upload as proof of payment; sent to the seller via email for manual verification</li>
+      </ul>
+      <p>This data is used <strong>solely for verifying your payment and issuing a license key</strong>. It is not used for marketing, profiling, or any other purpose.</p>
+      <p>By clicking "Send Screenshot" in the payment form, you explicitly consent to this data being transmitted to the seller via the Resend email service for license verification purposes only.</p>
+
+      <h3 style="font-size:16px;color:#333;margin:16px 0 12px;">2.3 Local Preferences</h3>
       <ul>
         <li>Your selected target language (stored in browser local storage)</li>
         <li>UI preferences (stored in browser local storage)</li>
+        <li>License key activation status (stored in browser local storage)</li>
       </ul>
 
-      <h3 style="font-size:16px;color:#333;margin:16px 0 12px;">2.3 What We Do NOT Collect</h3>
+      <h3 style="font-size:16px;color:#333;margin:16px 0 12px;">2.4 What We Do NOT Collect</h3>
       <ul class="check-list cross-list">
         <li>Browsing history</li>
         <li>Passwords or personal credentials</li>
         <li>Cookies or tracking identifiers</li>
         <li>Location data</li>
         <li>IP addresses</li>
-        <li>Any page content beyond the text you explicitly select</li>
+        <li>Any page content beyond the text you explicitly select for translation</li>
       </ul>
     </div>
 
@@ -80,7 +92,8 @@
       <h2>3. How We Use Your Data</h2>
       <ol>
         <li><strong>Translation</strong> — Selected text is sent to the OpenAI API solely to return a translation result.</li>
-        <li><strong>Preferences</strong> — Language settings are saved locally so you don't have to reconfigure each session.</li>
+        <li><strong>License Verification</strong> — Your email and payment screenshot are used exclusively to verify your Pro purchase and issue a license key. You provide this voluntarily with explicit consent via the payment form.</li>
+        <li><strong>Preferences</strong> — Language settings are saved locally so you don't need to reconfigure each session.</li>
       </ol>
       <p>We do <strong>not</strong> use your data for advertising, profiling, or analytics.</p>
     </div>
@@ -88,22 +101,36 @@
     <div class="section">
       <h2>4. Data Storage &amp; Retention</h2>
       <ul class="check-list">
-        <li><strong>Local only:</strong> Preferences are stored in your browser's extension storage.</li>
-        <li><strong>No server storage:</strong> We operate no database that stores your translation content.</li>
-        <li><strong>Immediate deletion:</strong> Text passed to OpenAI is discarded after the API responds.</li>
+        <li><strong>Translation text:</strong> Never stored — discarded immediately after OpenAI returns the result.</li>
+        <li><strong>Payment screenshot:</strong> Delivered via email to the seller; not retained in any server database.</li>
+        <li><strong>Email address:</strong> Retained only in the seller's email inbox for license verification correspondence.</li>
+        <li><strong>Local preferences:</strong> Stored in your browser's extension storage only.</li>
         <li><strong>User control:</strong> Uninstalling the extension removes all locally stored data.</li>
       </ul>
     </div>
 
     <div class="section">
       <h2>5. Third-Party Services</h2>
-      <p>AI Translator uses <strong>OpenAI API</strong> to process translation requests.</p>
+      <p>AI Translator uses the following third-party services:</p>
       <ul>
-        <li>OpenAI Privacy Policy: <a href="https://openai.com/privacy/" target="_blank">https://openai.com/privacy/</a></li>
-        <li>OpenAI does not use API inputs to train its models by default.</li>
-        <li>Text is transmitted over HTTPS.</li>
+        <li>
+          <strong>OpenAI API</strong> — for translation processing
+          <ul style="margin-top:8px;">
+            <li>Privacy Policy: <a href="https://openai.com/privacy/" target="_blank">https://openai.com/privacy/</a></li>
+            <li>Only receives the text you select for translation</li>
+            <li>Does not use API inputs to train models by default</li>
+          </ul>
+        </li>
+        <li style="margin-top:12px;">
+          <strong>Resend</strong> — email delivery for Pro license payment verification
+          <ul style="margin-top:8px;">
+            <li>Privacy Policy: <a href="https://resend.com/privacy" target="_blank">https://resend.com/privacy</a></li>
+            <li>Only used when you voluntarily submit the Pro license purchase form</li>
+            <li>Receives your email address and payment screenshot solely for delivery to the seller</li>
+          </ul>
+        </li>
       </ul>
-      <p>No other third-party services receive your data.</p>
+      <p style="margin-top:12px;">No other third-party services receive your data.</p>
     </div>
 
     <div class="section">
@@ -145,7 +172,7 @@
     </div>
 
     <div class="highlight">
-      <strong>Summary:</strong> AI Translator only processes the text you select, sends it to OpenAI for translation, and returns the result to you. We store nothing on our servers and share nothing with third parties beyond OpenAI for the purpose of translation.
+      <strong>Summary:</strong> AI Translator processes two types of data: (1) text you select for translation — sent to OpenAI and immediately discarded; (2) your email and payment screenshot — only when you voluntarily submit the Pro license purchase form, transmitted via Resend to the seller solely for payment verification. We store nothing in a server database, and share data only with OpenAI (translation) and Resend (license verification).
     </div>
 
     <div class="contact-box">
